@@ -1,0 +1,103 @@
+Magic Mirror
+------------
+Kurzes Drücken des Knopfes (< 1s)
+Mittleres Drücken des Knopfes (> 1s, < 10s)
+Langes Drücken des Knopfes (> 10s)
+
+Schlafmodus (gelb)
+------------------
+beide LED aus
+Kurzes Drücken des Knopfes weckt Raspberry Pi auf & wechselt in Offline Modus
+Mittleres Drücken des Knofpes weckt Raspberry Pi auf & wechselt in Online Modus
+Langes Drücken des Knopfes weckt Raspberry Pi auf & wechselt in Setup Modus
+beide LED signalisieren Initialisieren/Startup (Farbe pulsiert gelb)
+beide LED schwach weiss wenn bereit (Offline/Online/Setup Modus oder Antwort Modus wenn letztes Foto eine erhaltene Sendung war)
+
+Offline Modus (weiss)
+---------------------
+Einfaches Drücken des Knopfes löst Countdown aus
+Mittleres Drücken des Knopfes aktiviert Online-Modus
+rechtes LED weiss
+linkes LED rot
+linkes LED orange
+linkes LED grün
+beide LED weiss -> Foto wird gemacht
+Foto wird ausgedruckt
+beide LED schwach weiss (standby)
+
+Online Modus (violett)
+----------------------
+Mirror ist verbunden & registriert auf MagicMirror Website.
+Mirror ist in einer Gruppe registriert. Gruppen haben alphanumerische Id mit X Zeichen.
+https://<group-id>.magicmirror.com zum Konfigurieren via Mobile/Computer.
+Gruppe hat limitierte Anzahl an Mitgliedern (16 Farben?)
+Jeder Mirror bekommt eine Farbe zugeordnet in der Gruppe.
+Alle  Mirrors in einer Gruppe können einander Fotos senden.
+
+linkes LED violett, rechtes LED regenbogenfarben-cycle (random Auswahl aktiviert)
+Nach 10 Sek timeout wieder zurück in Offline Modus (beide LED schwach weiss, standby)
+Kurzes Drücken des Knopfes cyclet durch Mitglieder der Gruppe (rechtes LED zeigt Farbe des aktuell ausgewählten Gruppenmitglieds) & random (regenbogenfarben-cycle)
+
+Senden Modus
+------------
+Mittleres Drücken des Knopfes löst Countdown aus
+rechtes LED violett
+linkes LED rot
+linkes LED orange
+linkes LED grün
+beide LED weiss -> Foto wird gemacht
+beide LED in Farbe des ausgewählten Empfängers
+Foto wird an ausgewählten Empfänger gesendet
+wenn gesendetes Foto Antwort war, wird Foto ausgedruckt
+
+Empfang Modus
+-------------
+Wenn MagicMirror > 10s in Standby war kann Foto empfangen/ausgedruckt werden.
+linkes LED violett, rechtes LED Farbe von Sender
+wenn empfangenes Foto Antwort war, wird erstes Foto ausgedruckt
+empfangenes Foto wird ausgedruckt
+-> wechsel in Antwort Modus
+
+Antwort Modus
+-------------
+linkes LED violett, rechtes LED pulsiert in Farbe von Sender
+Mittleres Drücken des Knopfes bricht Konversation ab -> Empfänger Mirror wechselt wieder in Offline Modus (beide LED schwach weiss)
+Kurzes Drücken des Knopfes sendet Antwort -> Senden Modus
+
+Setup Modus
+-----------
+Langes Drücken des Knopfes wechselt zurück in Offline Modus
+
+WLAN Setup (System überprüft WLAN Verbindung, beide LED blau pulsierend)
+-> wenn WLAN nicht ok, beide LED blau pulsierend
+	-> Mirror druckt Liste mit vorhandenen WLANs aus (je Positions-Code + WLAN Name + Passwort Eingabemaske □□□□□□□□□□□□□□□□□□□□)
+	-> User schneidet entsprechenden Abschnitt aus, füllt Passwort in Eingabemaske ein, hält Zettel vor Kamera
+	-> Mirror liest WLAN Name + Passwort mit OCR ein
+	-> Mirror versucht Verbindung mit WLAN
+		-> wenn WLAN Verbindung nicht ok, druckt Meldung aus "Konnte nicht mit WLAN <WLAN Name> und Passwort <Passwort> verbinden + neuer Positions-Code + WLAN Name + Passwort Eingabemaske □□□□□□□□□□□□□□□□□□□□
+		-> wenn WLAN ok beide LED blau, weiter mit Internet Setup
+-> wenn WLAN ok, beide LED blau, weiter mit Internet Setup
+
+Internet Setup (System überprüft Verbindung zu www.magicmirror.com, beide LED violett pulsierend)
+-> wenn Internet nicht ok
+	-> beide LED violett pulsierend
+	-> drucke Fehlermeldung aus
+	-> Kurzes Drücken des Knopfes wechselt zu Offline Modus (Online Modus deaktiviert)
+	-> Mittleres Drücken des Knopfes startet WLAN Setup neu
+-> wenn Internet ok
+	-> beide LED violett, weiter mit Group Setup
+
+Group Setup
+-> wenn Gruppe konfiguriert
+	-> linkes LED türkis pulsierend, rechtes LED Farbe in Gruppe pulsierend
+	-> Mirror druckt aktuelle Gruppeninfo aus
+	-> Kurzes Drücken des Knopfes bestätigt Gruppe (linkes LED türkis, rechtes LED Farbe in Gruppe), weiter in Offline Modus
+	-> Mittleres Drücken des Knopfes löscht Gruppe & wechselt zu Gruppe nicht konfiguriert
+	
+-> wenn Gruppe nicht konfiguriert
+	-> beide LED türkis pulsierend
+	-> Mirror druckt Positions-Code + Gruppen-ID Eingabemaske □□□□□□□□□□□□□□□□□□□□ aus
+	-> Kurzes Drücken druckt neuen Positions-Code + Gruppen-ID Eingabemaske □□□□□□□□□□□□□□□□□□□□ aus
+	-> Mittleres Drücken wechselt zu Offline Modus (Online Modus deaktiviert)
+	-> User hält Gruppen-ID Eingabemaske vor Kamera, Mirror erkennt Gruppen-ID
+	-> Wenn Gruppen-ID ok, linke LED türkis, rechte LED farbe in Gruppe, wechselt zu Offline Modus

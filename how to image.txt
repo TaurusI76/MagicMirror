@@ -1,0 +1,6 @@
+sudo nano /etc/rc.local
+raspistill -o image.jpg
+
+Thermal Printer
+idVendor 0x0fe6
+idProduct 0x811e
