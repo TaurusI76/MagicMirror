@@ -13,6 +13,7 @@ from multiprocessing import Process
 import PrinterControl as printer
 import CameraControl as camera
 import LedControl as led
+import VersionControl as updater
 
 enablePrinting = True
 takingPicture = False
@@ -128,6 +129,12 @@ def Init():
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
+    print("Checking for updates...")
+    currentversion = updater.GetCurrentVersion();
+    print("Current version is")
+    print(currentversion)
+    os.popen("git
+
     print("Initialization continues...")
     global button
     button.when_pressed = TakePicture
