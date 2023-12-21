@@ -209,7 +209,7 @@ def OnShutdownContinue():
     shuttingDown = False
     print("System stopped.")
 
-    if rebootAfterShutdown
+    if rebootAfterShutdown:
         os.popen("sudo reboot")
 
 Init()
