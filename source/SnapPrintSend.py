@@ -139,10 +139,10 @@ def OnInitContinue():
     updateResult = subprocess.Popen("./update.sh")
     updateReturnCode = updateResult.returncode
 
-    if updateReturnCode == 1
+    if updateReturnCode == 1:
         rebootAfterShutdown = True
         Shutdown();
-    else
+    else:
         print("Initialization continues...")
         global button
         button.when_pressed = TakePicture
