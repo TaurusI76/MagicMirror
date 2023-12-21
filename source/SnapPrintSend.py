@@ -8,6 +8,7 @@ from time import sleep
 import os
 import multiprocessing as mp
 from multiprocessing import Process
+import subprocess
 
 # import other scripts
 import PrinterControl as printer
@@ -22,6 +23,7 @@ timeoutEnabled = False
 systemTimeoutS = 5
 shutdown = False
 shuttingDown = False
+rebootAfterShutdown = False
 startTime = time.time()
 ledUpdateProcesses = []
 pipeToLed = None
@@ -133,15 +135,21 @@ def OnInitContinue():
     currentversion = updater.GetCurrentVersion();
     print("Current version is")
     print(currentversion)
-    os.popen("git
 
-    print("Initialization continues...")
-    global button
-    button.when_pressed = TakePicture
+    updateResult = subprocess.Popen("./update.sh")
+    updateReturnCode = updateResult.returncode
 
-    global led
-    SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
-    SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
+    if updateReturnCode == 1
+        rebootAfterShutdown = True
+        Shutdown();
+    else
+        print("Initialization continues...")
+        global button
+        button.when_pressed = TakePicture
+
+        global led
+        SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
+        SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
 
 def OnInitFinish():
     print("Finishing initialization...")
@@ -200,6 +208,9 @@ def OnShutdownContinue():
     global shuttingDown
     shuttingDown = False
     print("System stopped.")
+
+    if rebootAfterShutdown
+        os.popen("sudo reboot")
 
 Init()
 
