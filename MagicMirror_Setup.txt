@@ -1,0 +1,54 @@
+User/PW:
+--------
+magicmirror
+NKS5XMxAAzWJIR75WNyy
+
+Enable camera:
+--------------
+sudo raspi-config
+-> Interface Options -> Legacy Camera -> Yes
+reboot
+
+Install packages:
+-----------------
+sudo apt-get update
+sudo apt-get install -y python3-pip
+sudo apt-get install -y python3-picamera
+sudo apt-get install -y python3-pigpio
+sudo pip3 install escpos[usb]
+sudo apt install -y git
+
+Copy the code from GIT:
+-----------------------
+git clone https://github.com/TaurusI76/MagicMirror
+
+Create log file:
+----------------
+sudo nano magicmirror.log
+sudo chmod 666 magicmirror.log
+
+Grant permission to access usb:
+-------------------------------
+sudo chmod 666 /dev/usb/lp0
+
+Create file to allow access to usb:
+-----------------------------------
+sudo nano /etc/udev/rules.d/99-usb.rules
+
+Insert the following:
+---------------------
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fe6",
+ATTR{idProduct}=="811e", MODE="666"
+
+Autostart PI GPIO Daemon:
+-------------------------
+sudo systemctl enable pigpiod
+
+Autostart MagicMirror:
+----------------------
+sudo nano /etc/rc.local
+
+Before 'exit 0', add:
+---------------------
+sudo pigpiod
+sudo python3 home/magicmirror/MagicMirror/source/SnapPrintSend.py & >> home/magicmirror/magicmirror.log 2>&1
