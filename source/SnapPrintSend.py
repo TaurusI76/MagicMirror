@@ -106,9 +106,11 @@ def OnContinueTakingPicture2():
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnReadyAgain)
 
 def Init():
-    print("System initializing...")
-    print("Working directory is:")
+    # Print out the working directory
     subprocess.call("pwd")
+    
+    print("System initializing...")
+    
     global led
     global ledUpdateProcesses
 
