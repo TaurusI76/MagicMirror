@@ -107,7 +107,7 @@ def OnContinueTakingPicture2():
 
 def Init():
     # Print out the working directory
-    subprocess.call("pwd")
+    subprocess.popen("pwd")
     
     print("System initializing...")
     
