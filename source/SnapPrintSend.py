@@ -127,8 +127,8 @@ def Init():
         led.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
 
-    SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
-    SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
+    SetLEDColor(0, led.COLOR_RED, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
+    SetLEDColor(1, led.COLOR_RED, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
     print("Checking for updates...")
