@@ -132,14 +132,19 @@ def Init():
 
 def OnInitContinue():
     print("Checking for updates...")
-    currentversion = updater.GetCurrentVersion();
+    currentVersion = updater.GetCurrentVersion();
     print("Current version is")
-    print(currentversion)
+    print(currentVersion)
 
-    updateResult = subprocess.Popen("./update.sh")
-    updateReturnCode = updateResult.returncode
+    os.popen("chmod +x ./update.sh")
+    updateResult = subprocess.call("./update.sh")
 
-    if updateReturnCode == 1:
+    # Get the new version after updating the source files
+    newVersion = updater.GetCurrentVersion();
+    print("New version is")
+    print(newVersion)
+
+    if updateResult == 1 and newVersion != currentVersion:
         rebootAfterShutdown = True
         Shutdown();
     else:
