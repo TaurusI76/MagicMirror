@@ -21,6 +21,7 @@ sudo apt install -y git
 Copy the code from GIT:
 -----------------------
 git clone https://github.com/TaurusI76/MagicMirror
+git config --global pull.rebase true
 
 Create log file:
 ----------------
@@ -51,4 +52,4 @@ sudo nano /etc/rc.local
 Before 'exit 0', add:
 ---------------------
 sudo pigpiod
-sudo python3 home/magicmirror/MagicMirror/source/SnapPrintSend.py & >> home/magicmirror/magicmirror.log 2>&1
+sudo python3 home/magicmirror/MagicMirror/source/SnapPrintSend.py &> home/magicmirror/magicmirror.log
