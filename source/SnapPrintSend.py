@@ -143,6 +143,7 @@ def OnInitContinue():
 
     os.popen("chmod +x ./update.sh")
     updateResult = subprocess.call("./update.sh")
+    print("Update script finished.")
 
     if updateResult == 1:    
         # Get the new version after updating the source files
