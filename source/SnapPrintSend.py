@@ -155,6 +155,7 @@ def OnInitContinue():
         updateResult = subprocess.call("cp ../MagicMirror/source/*.py .")
         updateResult = subprocess.call("cp ../MagicMirror/source/*.sh .")
         rebootAfterShutdown = True
+        print("Initializing reboot after update...")
         Shutdown();  
     else:
         print("Initialization continues...")
