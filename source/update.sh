@@ -1,5 +1,6 @@
 #!/bin/bash
 # Check for updates
+cd ../MagicMirror
 sudo git fetch
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse @{u})
