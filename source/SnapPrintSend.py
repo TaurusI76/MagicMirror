@@ -149,8 +149,8 @@ def OnInitContinue():
         
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        #updateResult = subprocess.call("cp MagicM/*.py MagicMirrorExecutables/.")
-        #updateResult = subprocess.call("cp MagicM/*.sh MagicMirrorExecutables/.")
+        #updateResult = subprocess.call("cp ../MagicMirror/source/*.py .")
+        #updateResult = subprocess.call("cp ../MagicMirror/source/*.sh .")
         #rebootAfterShutdown = True
         Shutdown();  
     else:
