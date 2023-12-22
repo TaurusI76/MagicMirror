@@ -107,6 +107,8 @@ def OnContinueTakingPicture2():
 
 def Init():
     print("System initializing...")
+    print("Working directory is:")
+    subprocess.call("pwd")
     global led
     global ledUpdateProcesses
 
@@ -146,7 +148,6 @@ def OnInitContinue():
         print(newVersion)
         
     if newVersion != currentVersion:
-        subprocess.call("pwd")
         print("Copying updated files to program directory...")
         #updateResult = subprocess.call("cp MagicM/*.py MagicMirrorExecutables/.")
         #updateResult = subprocess.call("cp MagicM/*.sh MagicMirrorExecutables/.")
