@@ -129,8 +129,8 @@ def Init():
         led.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
 
-    SetLEDColor(0, led.COLOR_PURPLE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
-    SetLEDColor(1, led.COLOR_PURPLE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
+    SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
+    SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
     print("Checking for updates...")
@@ -150,9 +150,9 @@ def OnInitContinue():
         
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        #updateResult = subprocess.call("cp ../MagicMirror/source/*.py .")
-        #updateResult = subprocess.call("cp ../MagicMirror/source/*.sh .")
-        #rebootAfterShutdown = True
+        updateResult = subprocess.call("cp ../MagicMirror/source/*.py .")
+        updateResult = subprocess.call("cp ../MagicMirror/source/*.sh .")
+        rebootAfterShutdown = True
         Shutdown();  
     else:
         print("Initialization continues...")
