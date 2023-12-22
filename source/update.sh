@@ -1,6 +1,5 @@
 #!/bin/bash
 # Check for updates
-cd ota_updates
 sudo git fetch
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse @{u})
