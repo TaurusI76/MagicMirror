@@ -142,7 +142,11 @@ def OnInitContinue():
     newVersion = currentVersion
 
     os.popen("chmod +x ./update.sh")
-    updateResult = subprocess.call("./update.sh")
+    updateResult = subprocess.run(['./update.sh'], capture_output=True, text=True)
+    print("stdout:", updateResult.stdout)
+    print("stderr:", updateResult.stderr)
+    
+    #updateResult = subprocess.call(['./update.sh'], shell = True)
     print("Update script finished.")
 
     if updateResult == 1:    
