@@ -6,9 +6,9 @@ LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse @{u})
 if [ $LOCAL != $REMOTE ]; then
 	echo “Repository is outdated. Updating…”
-	git pull
+	git pull --rebase
 	# Download updates
-	git checkout main
+	#git checkout main
 	# Replace the current application with the updated version
 	rsync -a ./..
 	echo “Repository updated.”
