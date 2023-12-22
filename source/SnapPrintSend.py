@@ -147,6 +147,8 @@ def OnInitContinue():
         newVersion = updater.GetCurrentVersion();
         print("New version is")
         print(newVersion)
+    else:
+        print("No need to update program files.")
         
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
