@@ -137,6 +137,7 @@ def OnInitContinue():
     currentVersion = updater.GetCurrentVersion();
     print("Current version is")
     print(currentVersion)
+    newVersion = currentVersion
 
     os.popen("chmod +x ./update.sh")
     updateResult = subprocess.call("./update.sh")
