@@ -8,7 +8,7 @@ if [ $LOCAL != $REMOTE ]; then
 	echo “Repository is outdated. Updating…”
 	# git pull
 	# Download updates
-	git checkout master
+	git checkout main
 	# Replace the current application with the updated version
 	rsync -a ./..
 	echo “Repository updated.”
