@@ -107,7 +107,7 @@ def OnContinueTakingPicture2():
 
 def Init():
     # Print out the working directory
-    subprocess.popen("pwd")
+    subprocess.Popen("pwd")
     
     print("System initializing...")
     
@@ -155,8 +155,8 @@ def OnInitContinue():
         
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        updateResult = subprocess.call("cp ../MagicMirror/source/*.py .")
-        updateResult = subprocess.call("cp ../MagicMirror/source/*.sh .")
+        updateResult = subprocess.call("sudo cp ../MagicMirror/source/*.py .")
+        updateResult = subprocess.call("sudo cp ../MagicMirror/source/*.sh .")
         rebootAfterShutdown = True
         print("Initializing reboot after update...")
         Shutdown();  
