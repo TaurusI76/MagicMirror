@@ -139,14 +139,19 @@ def OnInitContinue():
     os.popen("chmod +x ./update.sh")
     updateResult = subprocess.call("./update.sh")
 
-    # Get the new version after updating the source files
-    newVersion = updater.GetCurrentVersion();
-    print("New version is")
-    print(newVersion)
-
-    if updateResult == 1 and newVersion != currentVersion:
-        rebootAfterShutdown = True
-        Shutdown();
+    if updateResult == 1:    
+        # Get the new version after updating the source files
+        newVersion = updater.GetCurrentVersion();
+        print("New version is")
+        print(newVersion)
+        
+    if newVersion != currentVersion:
+        subprocess.call("pwd")
+        print("Copying updated files to program directory...")
+        #updateResult = subprocess.call("cp MagicM/*.py MagicMirrorExecutables/.")
+        #updateResult = subprocess.call("cp MagicM/*.sh MagicMirrorExecutables/.")
+        #rebootAfterShutdown = True
+        Shutdown();  
     else:
         print("Initialization continues...")
         global button
