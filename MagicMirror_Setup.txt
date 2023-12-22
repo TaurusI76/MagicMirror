@@ -22,6 +22,7 @@ Copy the code from GIT:
 -----------------------
 git clone https://github.com/TaurusI76/MagicMirror
 git config --global pull.rebase true
+cd ./MagicMirror/source/ && mkdir ota_updates && cd .. && cd ..
 
 Create log file:
 ----------------
@@ -52,4 +53,4 @@ sudo nano /etc/rc.local
 Before 'exit 0', add:
 ---------------------
 sudo pigpiod
-sudo python3 home/magicmirror/MagicMirror/source/SnapPrintSend.py &> home/magicmirror/magicmirror.log
+cd /home/magicmirror/MagicMirror/source && sudo python3 SnapPrintSend.py | tee /home/magicmirror/magicmirror.log
