@@ -6,7 +6,7 @@ LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse @{u})
 if [ $LOCAL != $REMOTE ]; then
 	echo “Repository is outdated. Updating…”
-	git pull --rebase
+	sudo git pull --rebase
 	echo “Repository updated.”
 	exit 1
 else
