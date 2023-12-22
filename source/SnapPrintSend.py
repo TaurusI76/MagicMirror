@@ -108,9 +108,9 @@ def OnContinueTakingPicture2():
 def Init():
     # Print out the working directory
     subprocess.Popen("pwd")
-    
+
     print("System initializing...")
-    
+
     global led
     global ledUpdateProcesses
 
@@ -145,25 +145,25 @@ def OnInitContinue():
     updateResult = subprocess.run(['./update.sh'], capture_output=True, text=True)
     print("stdout:", updateResult.stdout)
     print("stderr:", updateResult.stderr)
-    
+
     #updateResult = subprocess.call(['./update.sh'], shell = True)
     print("Update script finished.")
 
-    if updateResult == 1:    
+    if updateResult.returncode == 1:
         # Get the new version after updating the source files
         newVersion = updater.GetCurrentVersion();
         print("New version is")
         print(newVersion)
     else:
         print("No need to update program files.")
-        
+
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
         updateResult = subprocess.call("sudo cp ../MagicMirror/source/*.py .")
         updateResult = subprocess.call("sudo cp ../MagicMirror/source/*.sh .")
         rebootAfterShutdown = True
         print("Initializing reboot after update...")
-        Shutdown();  
+        Shutdown();
     else:
         print("Initialization continues...")
         global button
