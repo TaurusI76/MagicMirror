@@ -120,12 +120,12 @@ def Init():
     # Check if we got an exe path as an argument
     if len(sys.argv) > 1:
         global exePath
-        exePath = int(sys.argv[1])
+        exePath = sys.argv[1]
        
     # Check if we got a source path as an argument
     if len(sys.argv) > 2:
         global sourcePath
-        sourcePath = int(sys.argv[2])
+        sourcePath = sys.argv[2]
 
     global ledCtrl
     ledCtrl = led
