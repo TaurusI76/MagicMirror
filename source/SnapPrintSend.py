@@ -182,7 +182,7 @@ def Init():
     
     logger.info("Checking for updates...")
     currentVersion = updater.GetCurrentVersion(sourcePath);
-    logger.info("Current version is " + currentVersion)
+    logger.info("Current version is " + str(currentVersion))
     newVersion = currentVersion
 
     os.popen("chmod +x " + exePath + "/update.sh")
@@ -194,7 +194,7 @@ def Init():
     if updateResult.returncode == 1:
         # Get the new version after updating the source files
         newVersion = updater.GetCurrentVersion(sourcePath);
-        logger.info("New version is " + newVersion)
+        logger.info("New version is " + str(newVersion))
     else:
         logger.info("No need to update program files.")
 
