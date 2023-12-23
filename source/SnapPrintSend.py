@@ -7,6 +7,7 @@ import time
 from time import sleep
 import os
 import sys
+import logging
 import multiprocessing as mp
 from multiprocessing import Process
 import subprocess
@@ -17,6 +18,7 @@ import CameraControl as camera
 import LedControl as led
 import VersionControl as updater
 
+# Init variables
 enablePrinting = True
 takingPicture = False
 sleepTimeBeforeCapture = 2
@@ -34,6 +36,16 @@ ledCtrl = None
 exePath = ""
 sourcePath = ""
 
+# Init logging
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 def SetLEDColor(ledNo, color, mode=led.MODE_STEADY, speed=led.PULSE_SPEED_MEDIUM, maxBrightness=1, callback=None, cyclesUntilCallback=1):
     setColorData = [ledNo, color, mode, speed, maxBrightness, callback, cyclesUntilCallback]
     pipeToLed.send(setColorData)
@@ -43,22 +55,22 @@ def SetLEDOff(ledNo):
     pipeToLed.send(setOffData)
 
 def OnReadyAgain():
-    print("Sytem ready.")
+    logger.info("Sytem ready.")
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
 
 def TakePicture():
     global shutdown
     if (shutdown):
-        print("System is shut down. Initializing before taking a picture...")
+        logger.info("System is shut down. Initializing before taking a picture...")
         Init()
         return
 
-    print("Initialize taking picture...")
+    logger.info("Initialize taking picture...")
 
     global takingPicture
     if (takingPicture):
-        print("System already taking a picture. Aborting...")
+        logger.info("System already taking a picture. Aborting...")
         return
 
     takingPicture = True;
@@ -67,10 +79,10 @@ def TakePicture():
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_FAST, led.STANDBY_BRIGHTNESS, OnContinueTakingPicture)
 
 def OnContinueTakingPicture():
-    print("Initializing camera...")
+    logger.info("Initializing camera...")
     global cam
     cam = camera.InitCamera()
-    print("Camera initialized.")
+    logger.info("Camera initialized.")
 
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST, 1, OnContinueTakingPicture2, 3)
@@ -84,38 +96,38 @@ def OnContinueTakingPicture2():
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY)
 
-    print("Waiting for camera to focus & balance...")
+    logger.info("Waiting for camera to focus & balance...")
     sleep(sleepTimeBeforeCapture)
 
-    print("Taking picture...")
+    logger.info("Taking picture...")
     imageName = camera.TakePicture(cam)
     cam = None
-    print("Took picture", imageName)
+    logger.info("Took picture", imageName)
 
-    print("Processing picture...")
+    logger.info("Processing picture...")
     SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, led.PULSE_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, led.PULSE_BRIGHTNESS)
 
     camera.ProcessPicture()
 
-    print("Printing picture...")
+    logger.info("Printing picture...")
     if (enablePrinting):
         printer.PrintImage(imageName)
     else:
         sleep(10)
 
     takingPicture = False
-    print("Picture taken & printed.")
+    logger.info("Picture taken & printed.")
     
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnReadyAgain)
 
 def Init():
-    print("System initializing...")
+    logger.info("System initializing...")
 
     # Print out the working directory
     pwdResult = subprocess.run(['pwd'], capture_output=True, text=True)
-    print("Working directory: " + pwdResult.stdout)
+    logger.info("Working directory: " + pwdResult.stdout)
     
     # Check if we got an exe path as an argument
     global exePath
@@ -133,7 +145,7 @@ def Init():
     global ledUpdateProcesses
 
     if __name__ == '__main__':
-        print("Starting LED service...")
+        logger.info("Starting LED service...")
         ledCtrl.shutdownEvent.set()
 
         global pipeToLed
@@ -148,62 +160,60 @@ def Init():
         ledUpdateProcesses.append(Process(target=ledCtrl.Update))
         ledCtrl.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
-        print("LED service started.")
+        logger.info("LED service started.")
 
     SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
 
     # Check if we're running from IDE
     if not exePath:
-        print("Exe path not set, skipping update procedure.")
+        logger.info("Exe path not set, skipping update procedure.")
         
         # Skip the auto-update if running from IDE
         OnInitFinish()
         return
     
     if not sourcePath:
-        print("Source path not set, skipping update procedure.")
+        logger.info("Source path not set, skipping update procedure.")
         
         # Skip the auto-update if running from IDE
         OnInitFinish()
         return
     
-    print("Checking for updates...")
+    logger.info("Checking for updates...")
     currentVersion = updater.GetCurrentVersion(sourcePath);
-    print("Current version is")
-    print(currentVersion)
+    logger.info("Current version is " + currentVersion)
     newVersion = currentVersion
 
     os.popen("chmod +x " + exePath + "/update.sh")
     updateResult = subprocess.run(['sh ' + exePath + '/update.sh ' + sourcePath], shell=True, capture_output=True, text=True)
-    print("update.sh out:", updateResult.stdout)
-    print("update.sh errors:", updateResult.stderr)
-    print("Update script finished.")
+    logger.info("update.sh out:", updateResult.stdout)
+    logger.info("update.sh errors:", updateResult.stderr)
+    logger.info("Update script finished.")
 
     if updateResult.returncode == 1:
         # Get the new version after updating the source files
         newVersion = updater.GetCurrentVersion(sourcePath);
-        print("New version is")
-        print(newVersion)
+        logger.info("New version is " + newVersion)
     else:
-        print("No need to update program files.")
+        logger.info("No need to update program files.")
 
     if newVersion != currentVersion:
         SetLEDColor(0, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
         SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
         
-        print("Copying updated files to program directory...")
+        logger.info("Copying updated files to program directory...")
         os.popen("chmod +x " + exePath + "/copy.sh")
         copyResult = subprocess.run(['sh ' + exePath + '/copy.sh ' + exePath + ' ' + sourcePath], shell=True, capture_output=True, text=True)
-        print("copy.sh out:", copyResult.stdout)
-        print("copy.sh errors:", copyResult.stderr)
+        logger.info("copy.sh out:", copyResult.stdout)
+        logger.info("copy.sh errors:", copyResult.stderr)
         
         global rebootAfterShutdown
         rebootAfterShutdown = True
-        print("Initializing reboot after update...")
+        logger.info("Initializing reboot after update...")
         Shutdown();
     else:
-        print("Initialization continues...")
+        logger.info("Initialization continues...")
         global button
         button.when_pressed = TakePicture
 
@@ -211,7 +221,7 @@ def Init():
         SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
 
 def OnInitFinish():
-    print("Finishing initialization...")
+    logger.info("Finishing initialization...")
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
 
@@ -224,15 +234,15 @@ def OnInitFinish():
     global startTime
     startTime = time.time()
 
-    print("System running.")
+    logger.info("System running.")
 
 def Shutdown():
     global shutdown
     if (shutdown):
-        print("System already shut down.")
+        logger.info("System already shut down.")
         return
 
-    print("System stopping...")
+    logger.info("System stopping...")
     global shuttingDown
     shuttingDown = True
 
@@ -266,11 +276,11 @@ def OnShutdownContinue():
 
     global shuttingDown
     shuttingDown = False
-    print("System stopped.")
+    logger.info("System stopped.")
 
     global rebootAfterShutdown
     if rebootAfterShutdown:
-        print("System rebooting...")
+        logger.info("System rebooting...")
         os.popen("sudo reboot")
 
 Init()
@@ -282,14 +292,14 @@ while True:
             timeDiff = currentTime - startTime
 
             if (timeoutEnabled and timeDiff > systemTimeoutS and not shuttingDown):
-                print("Shutting down due to timeout")
+                logger.info("Shutting down due to timeout")
                 Shutdown()
                 #os.system("sudo shutdown -h now")
-                #print("Shutdown command sent to OS")
+                #logger.info("Shutdown command sent to OS")
 
-            #print("polling pipe to ledCtrl", str(pipeToLed))
+            #logger.info("polling pipe to ledCtrl", str(pipeToLed))
             if (pipeToLed.poll()):
-                print("Got callback function from pipe")
+                logger.info("Got callback function from pipe")
                 callbackFunction = pipeToLed.recv()
                 callbackFunction()
 
