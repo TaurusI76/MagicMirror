@@ -22,6 +22,7 @@ import VersionControl as updater
 enablePrinting = True
 takingPicture = False
 sleepTimeBeforeCapture = 2
+sleepTimeBeforeUpdate = 5
 timeoutEnabled = False
 systemTimeoutS = 5
 shutdown = False
@@ -179,6 +180,9 @@ def Init():
         # Skip the auto-update if running from IDE
         OnInitFinish()
         return
+    
+    global sleepTimeBeforeUpdate
+    sleep(sleepTimeBeforeUpdate)
     
     logger.info("Checking for updates...")
     currentVersion = updater.GetCurrentVersion(sourcePath);
