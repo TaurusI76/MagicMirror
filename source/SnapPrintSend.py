@@ -114,8 +114,8 @@ def Init():
     print("System initializing...")
 
     # Print out the working directory
-    print("Working directory:")
-    subprocess.run(['pwd'], capture_output=True, text=True)
+    pwdResult = subprocess.run(['pwd'], capture_output=True, text=True)
+    print("Working directory: " + pwdResult.stdout)
     
     # Check if we got an exe path as an argument
     if len(sys.argv) > 1:
@@ -153,11 +153,19 @@ def Init():
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
-    global exePath
-    global sourcePath
-    
     # Check if we're running from IDE
-    if not exePath or not sourcePath:
+    global exePath
+    if not exePath:
+        print("Exe path not set, skipping update procedure.")
+        
+        # Skip the auto-update if running from IDE
+        OnInitFinish()
+        return
+    
+    global sourcePath
+    if not sourcePath:
+        print("Source path not set, skipping update procedure.")
+        
         # Skip the auto-update if running from IDE
         OnInitFinish()
         return
