@@ -13,7 +13,7 @@ import subprocess
 # import other scripts
 import PrinterControl as printer
 import CameraControl as camera
-import LedControl as led
+import LedControl as ledCtrl
 import VersionControl as updater
 
 enablePrinting = True
@@ -29,6 +29,7 @@ ledUpdateProcesses = []
 pipeToLed = None
 button = Button(3, pull_up = True)
 cam = None
+led = None
 
 def SetLEDColor(ledNo, color, mode=led.MODE_STEADY, speed=led.PULSE_SPEED_MEDIUM, maxBrightness=1, callback=None, cyclesUntilCallback=1):
     setColorData = [ledNo, color, mode, speed, maxBrightness, callback, cyclesUntilCallback]
@@ -39,6 +40,8 @@ def SetLEDOff(ledNo):
     pipeToLed.send(setOffData)
 
 def OnReadyAgain():
+    global led
+    
     print("Sytem ready.")
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
@@ -59,6 +62,7 @@ def TakePicture():
 
     takingPicture = True;
 
+    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_FAST, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_FAST, led.STANDBY_BRIGHTNESS, OnContinueTakingPicture)
 
@@ -68,6 +72,7 @@ def OnContinueTakingPicture():
     cam = camera.InitCamera()
     print("Camera initialized.")
 
+    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST, 1, OnContinueTakingPicture2, 3)
 
@@ -76,6 +81,7 @@ def OnContinueTakingPicture2():
     global printer
     global enablePrinting
     global takingPicture
+    global led
 
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY)
@@ -102,6 +108,7 @@ def OnContinueTakingPicture2():
 
     takingPicture = False
     print("Picture taken & printed.")
+    
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnReadyAgain)
 
@@ -112,6 +119,8 @@ def Init():
     print("System initializing...")
 
     global led
+    led = ledCtrl
+    
     global ledUpdateProcesses
 
     if __name__ == '__main__':
@@ -135,6 +144,8 @@ def Init():
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
+    global led
+    
     print("Checking for updates...")
     currentVersion = updater.GetCurrentVersion();
     print("Current version is")
@@ -158,7 +169,6 @@ def OnInitContinue():
         print("No need to update program files.")
 
     if newVersion != currentVersion:
-        global led
         SetLEDColor(0, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
         SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnUpdateFinish, 1)
     else:
@@ -166,7 +176,6 @@ def OnInitContinue():
         global button
         button.when_pressed = TakePicture
 
-        global led
         SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
         SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
 
@@ -184,6 +193,7 @@ def OnUpdateFinish():
 
 def OnInitFinish():
     print("Finishing initialization...")
+    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
 
@@ -208,6 +218,7 @@ def Shutdown():
     global shuttingDown
     shuttingDown = True
 
+    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnShutdownContinue)
 
