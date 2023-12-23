@@ -13,7 +13,7 @@ import subprocess
 # import other scripts
 import PrinterControl as printer
 import CameraControl as camera
-import LedControl as ledCtrl
+import LedControl as led
 import VersionControl as updater
 
 enablePrinting = True
@@ -29,7 +29,7 @@ ledUpdateProcesses = []
 pipeToLed = None
 button = Button(3, pull_up = True)
 cam = None
-led = None
+ledCtrl = None
 
 def SetLEDColor(ledNo, color, mode=led.MODE_STEADY, speed=led.PULSE_SPEED_MEDIUM, maxBrightness=1, callback=None, cyclesUntilCallback=1):
     setColorData = [ledNo, color, mode, speed, maxBrightness, callback, cyclesUntilCallback]
@@ -40,8 +40,6 @@ def SetLEDOff(ledNo):
     pipeToLed.send(setOffData)
 
 def OnReadyAgain():
-    global led
-    
     print("Sytem ready.")
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
@@ -62,7 +60,6 @@ def TakePicture():
 
     takingPicture = True;
 
-    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_FAST, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_FAST, led.STANDBY_BRIGHTNESS, OnContinueTakingPicture)
 
@@ -72,7 +69,6 @@ def OnContinueTakingPicture():
     cam = camera.InitCamera()
     print("Camera initialized.")
 
-    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_BLINK, led.PULSE_SPEED_FAST, 1, OnContinueTakingPicture2, 3)
 
@@ -81,7 +77,6 @@ def OnContinueTakingPicture2():
     global printer
     global enablePrinting
     global takingPicture
-    global led
 
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY)
@@ -118,34 +113,32 @@ def Init():
 
     print("System initializing...")
 
-    global led
-    led = ledCtrl
+    global ledCtrl
+    ledCtrl = led
     
     global ledUpdateProcesses
 
     if __name__ == '__main__':
         print("Starting LED service...")
-        led.shutdownEvent.set()
+        ledCtrl.shutdownEvent.set()
 
         global pipeToLed
         pipeToLed, pipeToMain = mp.Pipe(duplex=True)
-        led.pipeToMain = pipeToMain
+        ledCtrl.pipeToMain = pipeToMain
 
         while (len(ledUpdateProcesses) > 0):
             ledUpdateProcesses[0].join()
             ledUpdateProcesses.pop()
 
-        led.Init()
-        ledUpdateProcesses.append(Process(target=led.Update))
-        led.shutdownEvent.clear()
+        ledCtrl.Init()
+        ledUpdateProcesses.append(Process(target=ledCtrl.Update))
+        ledCtrl.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
 
     SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
-    global led
-    
     print("Checking for updates...")
     currentVersion = updater.GetCurrentVersion();
     print("Current version is")
@@ -193,7 +186,6 @@ def OnUpdateFinish():
 
 def OnInitFinish():
     print("Finishing initialization...")
-    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_STEADY, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
 
@@ -218,7 +210,6 @@ def Shutdown():
     global shuttingDown
     shuttingDown = True
 
-    global led
     SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_OUT, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnShutdownContinue)
 
@@ -229,15 +220,15 @@ def OnShutdownContinue():
     global printer
     printer.Shutdown()
 
-    global led
-    led.shutdownEvent.set()
+    global ledCtrl
+    ledCtrl.shutdownEvent.set()
 
     global ledUpdateProcesses
     while (len(ledUpdateProcesses) > 0):
         ledUpdateProcesses[0].join()
         ledUpdateProcesses.pop()
 
-    led.Shutdown()
+    ledCtrl.Shutdown()
 
     global pipeToLed
     pipeToLed.close()
@@ -270,7 +261,7 @@ while True:
                 #os.system("sudo shutdown -h now")
                 #print("Shutdown command sent to OS")
 
-            #print("polling pipe to led", str(pipeToLed))
+            #print("polling pipe to ledCtrl", str(pipeToLed))
             if (pipeToLed.poll()):
                 print("Got callback function from pipe")
                 callbackFunction = pipeToLed.recv()
