@@ -131,8 +131,8 @@ def Init():
         led.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
 
-    SetLEDColor(0, led.COLOR_YELLOW, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
-    SetLEDColor(1, led.COLOR_YELLOW, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
+    SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
+    SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
     print("Checking for updates...")
@@ -158,16 +158,8 @@ def OnInitContinue():
         print("No need to update program files.")
 
     if newVersion != currentVersion:
-        print("Copying updated files to program directory...")
-        os.popen("chmod +x ./copy.sh")
-        copyResult = subprocess.run(['./copy.sh'], capture_output=True, text=True)
-        print("stdout:", copyResult.stdout)
-        print("stderr:", copyResult.stderr)
-        
-        global rebootAfterShutdown
-        rebootAfterShutdown = True
-        print("Initializing reboot after update...")
-        Shutdown();
+        SetLEDColor(0, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
+        SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnUpdateFinish, 1)
     else:
         print("Initialization continues...")
         global button
@@ -176,6 +168,18 @@ def OnInitContinue():
         global led
         SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
         SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
+
+def OnUpdateFinish():
+    print("Copying updated files to program directory...")
+    os.popen("chmod +x ./copy.sh")
+    copyResult = subprocess.run(['./copy.sh'], capture_output=True, text=True)
+    print("stdout:", copyResult.stdout)
+    print("stderr:", copyResult.stderr)
+    
+    global rebootAfterShutdown
+    rebootAfterShutdown = True
+    print("Initializing reboot after update...")
+    Shutdown();
 
 def OnInitFinish():
     print("Finishing initialization...")
