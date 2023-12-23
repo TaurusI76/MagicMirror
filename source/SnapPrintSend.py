@@ -285,7 +285,7 @@ def OnShutdownContinue():
     global rebootAfterShutdown
     if rebootAfterShutdown:
         logger.info("System rebooting...")
-        os.popen("sudo reboot")
+        os.popen("sudo reboot -f")
 
 Init()
 
