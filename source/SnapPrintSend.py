@@ -158,6 +158,7 @@ def OnInitContinue():
         print("No need to update program files.")
 
     if newVersion != currentVersion:
+        global led
         SetLEDColor(0, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
         SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnUpdateFinish, 1)
     else:

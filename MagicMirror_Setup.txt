@@ -21,6 +21,7 @@ sudo apt install -y git
 Copy the code from GIT:
 -----------------------
 sudo git clone https://github.com/TaurusI76/MagicMirror
+sudo git config --global --add safe.directory /home/magicmirror/MagicMirror
 cd ./MagicMirror && sudo git config --global pull.rebase true && cd ..
 
 Create log file:
@@ -52,4 +53,4 @@ sudo nano /etc/rc.local
 Before 'exit 0', add:
 ---------------------
 sudo pigpiod
-cd /home/magicmirror/MagicMirrorExecutables && sudo python3 SnapPrintSend.py | tee /home/magicmirror/magicmirror.log
+sudo python3 /home/magicmirror/MagicMirrorExecutables/SnapPrintSend.py | tee /home/magicmirror/magicmirror.log
