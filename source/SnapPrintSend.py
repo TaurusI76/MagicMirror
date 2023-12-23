@@ -159,7 +159,7 @@ def OnInitContinue():
 
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        os.popen("chmod +x ./update.sh")
+        os.popen("chmod +x ./copy.sh")
         copyResult = subprocess.run(['./copy.sh'], capture_output=True, text=True)
         print("stdout:", copyResult.stdout)
         print("stderr:", copyResult.stderr)
