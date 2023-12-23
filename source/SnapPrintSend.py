@@ -169,7 +169,7 @@ def OnInitContinue():
     newVersion = currentVersion
 
     os.popen("chmod +x " + exePath + "/update.sh")
-    updateResult = subprocess.run([exePath + '/update.sh ' + sourcePath], capture_output=True, text=True)
+    updateResult = subprocess.run(['sh ' + exePath + '/update.sh ' + sourcePath], capture_output=True, text=True)
     print("update.sh out:", updateResult.stdout)
     print("update.sh errors:", updateResult.stderr)
     print("Update script finished.")
@@ -199,7 +199,7 @@ def OnUpdateFinish():
     
     print("Copying updated files to program directory...")
     os.popen("chmod +x " + exePath + "/copy.sh")
-    copyResult = subprocess.run([exePath + '/copy.sh ' + exePath + ' ' + sourcePath], capture_output=True, text=True)
+    copyResult = subprocess.run(['sh ' + exePath + '/copy.sh ' + exePath + ' ' + sourcePath], capture_output=True, text=True)
     print("copy.sh out:", copyResult.stdout)
     print("copy.sh errors:", copyResult.stderr)
     
