@@ -145,12 +145,10 @@ def OnInitContinue():
     print(currentVersion)
     newVersion = currentVersion
 
-    os.popen("chmod +x ./update.sh")
-    updateResult = subprocess.run(['./update.sh'], capture_output=True, text=True)
-    print("stdout:", updateResult.stdout)
-    print("stderr:", updateResult.stderr)
-
-    #updateResult = subprocess.call(['./update.sh'], shell = True)
+    os.popen("chmod +x ./MagicMirrorExecutables/update.sh")
+    updateResult = subprocess.run(['./MagicMirrorExecutables/update.sh'], capture_output=True, text=True)
+    print("update.sh out:", updateResult.stdout)
+    print("update.sh errors:", updateResult.stderr)
     print("Update script finished.")
 
     if updateResult.returncode == 1:
@@ -174,10 +172,10 @@ def OnInitContinue():
 
 def OnUpdateFinish():
     print("Copying updated files to program directory...")
-    os.popen("chmod +x ./copy.sh")
-    copyResult = subprocess.run(['./copy.sh'], capture_output=True, text=True)
-    print("stdout:", copyResult.stdout)
-    print("stderr:", copyResult.stderr)
+    os.popen("chmod +x ./MagicMirrorExecutables/copy.sh")
+    copyResult = subprocess.run(['./MagicMirrorExecutables/copy.sh'], capture_output=True, text=True)
+    print("copy.sh out:", copyResult.stdout)
+    print("copy.sh errors:", copyResult.stderr)
     
     global rebootAfterShutdown
     rebootAfterShutdown = True
