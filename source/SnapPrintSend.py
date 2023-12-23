@@ -187,8 +187,8 @@ def Init():
 
     os.popen("chmod +x " + exePath + "/update.sh")
     updateResult = subprocess.run(['sh ' + exePath + '/update.sh ' + sourcePath], shell=True, capture_output=True, text=True)
-    logger.info("update.sh out:", updateResult.stdout)
-    logger.info("update.sh errors:", updateResult.stderr)
+    logger.info("update.sh out: " + str(updateResult.stdout))
+    logger.info("update.sh errors: " + str(updateResult.stderr))
     logger.info("Update script finished.")
 
     if updateResult.returncode == 1:
@@ -205,8 +205,8 @@ def Init():
         logger.info("Copying updated files to program directory...")
         os.popen("chmod +x " + exePath + "/copy.sh")
         copyResult = subprocess.run(['sh ' + exePath + '/copy.sh ' + exePath + ' ' + sourcePath], shell=True, capture_output=True, text=True)
-        logger.info("copy.sh out:", copyResult.stdout)
-        logger.info("copy.sh errors:", copyResult.stderr)
+        logger.info("copy.sh out: " + str(copyResult.stdout))
+        logger.info("copy.sh errors: " + str(copyResult.stderr))
         
         global rebootAfterShutdown
         rebootAfterShutdown = True
