@@ -53,4 +53,4 @@ sudo nano /etc/rc.local
 Before 'exit 0', add:
 ---------------------
 sudo pigpiod
-sudo run_magicmirror.sh /home/magicmirror/MagicMirrorExecutables /home/magicmirror/MagicMirror /home/magicmirror/magicmirror.log
+sh /home/magicmirror/MagicMirrorExecutables/run_magicmirror.sh /home/magicmirror/MagicMirrorExecutables /home/magicmirror/MagicMirror /home/magicmirror/magicmirror.log

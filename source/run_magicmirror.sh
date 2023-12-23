@@ -3,17 +3,17 @@
 # This script should be run from the EXEPATH
 
 # Check if any arguments were supplied
-if [[ $# -eq 0 ]] ; then
+if [ $# -eq 0 ] ; then
     echo "No arguments supplied"
 	exit 1
 fi
 
-if [[ -z "$1" ]] ; then
+if [ -z "$1" ] ; then
     echo "No exe path supplied"
 	exit 1
 fi
 
-if [[ -z "$2" ]] ; then
+if [ -z "$2" ] ; then
     echo "No source path supplied"
 	exit 1
 fi
@@ -23,7 +23,7 @@ EXEPATH=$1
 SOURCEPATH=$2
 LOGFILE=$3
 
-if [[ -z "$3" ]] ; then
+if [ -z "$3" ] ; then
     echo "No log file path supplied. Running without log file."
 	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH
 else
@@ -33,7 +33,7 @@ else
 	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH | tee $LOGFILE
 fi
 
-if [[ $? = 0 ]]; then
+if [ $? = 0 ]; then
     echo "MagicMirror ran successfully."
 	exit 0
 else
