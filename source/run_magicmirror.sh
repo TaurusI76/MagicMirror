@@ -25,9 +25,10 @@ LOGFILE=$3
 
 if [[ -z "$3" ]] ; then
     echo "No log file path supplied. Running without log file."
-	sudo python3 $EXEPATH/SnapPrintSend.py
+	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH
 else
-	sudo python3 $EXEPATH/SnapPrintSend.py | tee $LOGFILE
+    echo "Running $EXEPATH/SnapPrintSend.py with $EXEPATH and $SOURCEPATH and logging to $LOGFILE"
+	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH | tee $LOGFILE
 fi
 
 if [[ $? = 0 ]]; then

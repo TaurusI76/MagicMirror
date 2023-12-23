@@ -6,6 +6,7 @@ from signal import pause
 import time
 from time import sleep
 import os
+import sys
 import multiprocessing as mp
 from multiprocessing import Process
 import subprocess
@@ -30,6 +31,8 @@ pipeToLed = None
 button = Button(3, pull_up = True)
 cam = None
 ledCtrl = None
+exePath = ""
+sourcePath = ""
 
 def SetLEDColor(ledNo, color, mode=led.MODE_STEADY, speed=led.PULSE_SPEED_MEDIUM, maxBrightness=1, callback=None, cyclesUntilCallback=1):
     setColorData = [ledNo, color, mode, speed, maxBrightness, callback, cyclesUntilCallback]
@@ -108,10 +111,21 @@ def OnContinueTakingPicture2():
     SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnReadyAgain)
 
 def Init():
-    # Print out the working directory
-    subprocess.Popen("pwd")
-
     print("System initializing...")
+
+    # Print out the working directory
+    print("Working directory:")
+    subprocess.run(['pwd'], capture_output=True, text=True)
+    
+    # Check if we got an exe path as an argument
+    if len(sys.argv) > 1:
+        global exePath
+        exePath = int(sys.argv[1])
+       
+    # Check if we got a source path as an argument
+    if len(sys.argv) > 2:
+        global sourcePath
+        sourcePath = int(sys.argv[2])
 
     global ledCtrl
     ledCtrl = led
@@ -139,21 +153,31 @@ def Init():
     SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
 
 def OnInitContinue():
+    global exePath
+    global sourcePath
+    
+    # Check if we're running from IDE
+    if not exePath or not sourcePath:
+        # Skip the auto-update if running from IDE
+        OnInitFinish()
+        return
+    
     print("Checking for updates...")
-    currentVersion = updater.GetCurrentVersion();
+    global sourcePath
+    currentVersion = updater.GetCurrentVersion(sourcePath);
     print("Current version is")
     print(currentVersion)
     newVersion = currentVersion
 
-    os.popen("chmod +x ./MagicMirrorExecutables/update.sh")
-    updateResult = subprocess.run(['./MagicMirrorExecutables/update.sh'], capture_output=True, text=True)
+    os.popen("chmod +x " + exePath + "/update.sh")
+    updateResult = subprocess.run([exePath + '/update.sh'], capture_output=True, text=True)
     print("update.sh out:", updateResult.stdout)
     print("update.sh errors:", updateResult.stderr)
     print("Update script finished.")
 
     if updateResult.returncode == 1:
         # Get the new version after updating the source files
-        newVersion = updater.GetCurrentVersion();
+        newVersion = updater.GetCurrentVersion(sourcePath);
         print("New version is")
         print(newVersion)
     else:
@@ -171,9 +195,11 @@ def OnInitContinue():
         SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
 
 def OnUpdateFinish():
+    global exePath
+    
     print("Copying updated files to program directory...")
-    os.popen("chmod +x ./MagicMirrorExecutables/copy.sh")
-    copyResult = subprocess.run(['./MagicMirrorExecutables/copy.sh'], capture_output=True, text=True)
+    os.popen("chmod +x " + exePath + "/copy.sh")
+    copyResult = subprocess.run([exePath + '/copy.sh'], capture_output=True, text=True)
     print("copy.sh out:", copyResult.stdout)
     print("copy.sh errors:", copyResult.stderr)
     
