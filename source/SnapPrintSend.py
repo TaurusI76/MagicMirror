@@ -159,8 +159,15 @@ def OnInitContinue():
 
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        updateResult = subprocess.run(['pwd && sudo cp ../MagicMirror/source/*.py .'], capture_output=True, text=True)
-        updateResult = subprocess.run(['pwd && sudo cp ../MagicMirror/source/*.sh .'], capture_output=True, text=True)
+        copyResult = subprocess.run(['pwd'], capture_output=True, text=True)
+        print("stdout:", copyResult.stdout)
+        print("stderr:", copyResult.stderr)
+        copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.py .'], capture_output=True, text=True)
+        print("stdout:", copyResult.stdout)
+        print("stderr:", copyResult.stderr)
+        copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.sh .'], capture_output=True, text=True)
+        print("stdout:", copyResult.stdout)
+        print("stderr:", copyResult.stderr)
         rebootAfterShutdown = True
         print("Initializing reboot after update...")
         Shutdown();
