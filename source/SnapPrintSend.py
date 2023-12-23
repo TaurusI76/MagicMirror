@@ -163,7 +163,6 @@ def OnInitContinue():
         return
     
     print("Checking for updates...")
-    global sourcePath
     currentVersion = updater.GetCurrentVersion(sourcePath);
     print("Current version is")
     print(currentVersion)

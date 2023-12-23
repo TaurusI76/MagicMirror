@@ -28,6 +28,8 @@ if [[ -z "$3" ]] ; then
 	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH
 else
     echo "Running $EXEPATH/SnapPrintSend.py with $EXEPATH and $SOURCEPATH and logging to $LOGFILE"
+	
+	# Run sudo python3 /home/magicmirror/MagicMirrorExecutables/SnapPrintSend.py /home/magicmirror/MagicMirrorExecutables /home/magicmirror/MagicMirror | tee /home/magicmirror/magicmirror.log
 	sudo python3 $EXEPATH/SnapPrintSend.py $EXEPATH $SOURCEPATH | tee $LOGFILE
 fi
 
