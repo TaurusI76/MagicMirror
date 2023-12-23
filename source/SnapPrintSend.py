@@ -118,13 +118,13 @@ def Init():
     print("Working directory: " + pwdResult.stdout)
     
     # Check if we got an exe path as an argument
+    global exePath
     if len(sys.argv) > 1:
-        global exePath
         exePath = sys.argv[1]
        
     # Check if we got a source path as an argument
+    global sourcePath
     if len(sys.argv) > 2:
-        global sourcePath
         sourcePath = sys.argv[2]
 
     global ledCtrl
@@ -148,13 +148,12 @@ def Init():
         ledUpdateProcesses.append(Process(target=ledCtrl.Update))
         ledCtrl.shutdownEvent.clear()
         ledUpdateProcesses[0].start()
+        print("LED service started.")
 
     SetLEDColor(0, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
-    SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnInitContinue, 2)
+    SetLEDColor(1, led.COLOR_ORANGE, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
 
-def OnInitContinue():
     # Check if we're running from IDE
-    global exePath
     if not exePath:
         print("Exe path not set, skipping update procedure.")
         
@@ -162,7 +161,6 @@ def OnInitContinue():
         OnInitFinish()
         return
     
-    global sourcePath
     if not sourcePath:
         print("Source path not set, skipping update procedure.")
         
@@ -192,7 +190,18 @@ def OnInitContinue():
 
     if newVersion != currentVersion:
         SetLEDColor(0, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
-        SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM, 1, OnUpdateFinish, 1)
+        SetLEDColor(1, led.COLOR_GREEN, led.MODE_PULSE, led.PULSE_SPEED_MEDIUM)
+        
+        print("Copying updated files to program directory...")
+        os.popen("chmod +x " + exePath + "/copy.sh")
+        copyResult = subprocess.run(['sh ' + exePath + '/copy.sh ' + exePath + ' ' + sourcePath], shell=True, capture_output=True, text=True)
+        print("copy.sh out:", copyResult.stdout)
+        print("copy.sh errors:", copyResult.stderr)
+        
+        global rebootAfterShutdown
+        rebootAfterShutdown = True
+        print("Initializing reboot after update...")
+        Shutdown();
     else:
         print("Initialization continues...")
         global button
@@ -200,21 +209,6 @@ def OnInitContinue():
 
         SetLEDColor(0, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS)
         SetLEDColor(1, led.COLOR_WHITE, led.MODE_FADE_IN, led.PULSE_SPEED_MEDIUM, led.STANDBY_BRIGHTNESS, OnInitFinish)
-
-def OnUpdateFinish():
-    global exePath
-    global sourcePath
-    
-    print("Copying updated files to program directory...")
-    os.popen("chmod +x " + exePath + "/copy.sh")
-    copyResult = subprocess.run(['sh ' + exePath + '/copy.sh ' + exePath + ' ' + sourcePath], shell=True, capture_output=True, text=True)
-    print("copy.sh out:", copyResult.stdout)
-    print("copy.sh errors:", copyResult.stderr)
-    
-    global rebootAfterShutdown
-    rebootAfterShutdown = True
-    print("Initializing reboot after update...")
-    Shutdown();
 
 def OnInitFinish():
     print("Finishing initialization...")
