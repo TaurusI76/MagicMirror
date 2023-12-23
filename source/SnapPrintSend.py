@@ -159,15 +159,16 @@ def OnInitContinue():
 
     if newVersion != currentVersion:
         print("Copying updated files to program directory...")
-        copyResult = subprocess.run(['pwd'], capture_output=True, text=True)
+        os.popen("chmod +x ./update.sh")
+        copyResult = subprocess.run(['./copy.sh'], capture_output=True, text=True)
         print("stdout:", copyResult.stdout)
         print("stderr:", copyResult.stderr)
-        copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.py .'], capture_output=True, text=True)
-        print("stdout:", copyResult.stdout)
-        print("stderr:", copyResult.stderr)
-        copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.sh .'], capture_output=True, text=True)
-        print("stdout:", copyResult.stdout)
-        print("stderr:", copyResult.stderr)
+        #copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.py .'], capture_output=True, text=True)
+        #print("stdout:", copyResult.stdout)
+        #print("stderr:", copyResult.stderr)
+        #copyResult = subprocess.run(['sudo cp ../MagicMirror/source/*.sh .'], capture_output=True, text=True)
+        #print("stdout:", copyResult.stdout)
+        #print("stderr:", copyResult.stderr)
         rebootAfterShutdown = True
         print("Initializing reboot after update...")
         Shutdown();
