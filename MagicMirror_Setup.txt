@@ -24,6 +24,12 @@ sudo git clone https://github.com/TaurusI76/MagicMirror
 sudo git config --global --add safe.directory /home/magicmirror/MagicMirror
 cd ./MagicMirror && sudo git config --global pull.rebase true && cd ..
 
+Copy the executables to a separate folder
+-----------------------------------------
+mkdir /home/magicmirror/MagicMirrorExecutables
+cp /home/magicmirror/MagicMirror/source/*.py /home/magicmirror/MagicMirrorExecutables
+cp /home/magicmirror/MagicMirror/source/*.sh /home/magicmirror/MagicMirrorExecutables
+
 Create log file:
 ----------------
 sudo nano magicmirror.log
